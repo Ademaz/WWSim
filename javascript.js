@@ -3029,25 +3029,29 @@ $(document).ready(function(){
 
 			if (defendingTerritory.currentOwner === attacker.name) {
 				console.log("Own territory chosen")
-				selectDefendingTerritory();
+				return selectDefendingTerritory();
 			}
 			else {
 				console.log("Defending territory " + defendingTerritory.name + " selected")
+				return defendingTerritory;
 			}
 		};
 
-		function attack() {
+		function attack(defendingTerritory) {
 			if (defendingTerritory.currentOwner == defendingTerritory.originalOwner) {
 				attackResultText = attacker.name + " attacks " + defendingTerritory.name;
 			}
 			else {
-				attackResultText = attacker.name + " attacks " + defendingTerritory.name + " from " + defendingTerritory.currentOwner;
+				attackResultText = attacker.name + " attacks " + defendingTerritory.name + ", currently owned by " + defendingTerritory.currentOwner;
 			}
 
 			defendingTerritoryPathName = defendingTerritory.name;
 			newColor = attacker.color;
 
 			defendingTerritory.previousOwner = defendingTerritory.currentOwner;
+
+			var originalOwner = defendingTerritory.currentOwner
+
 			defendingTerritory.currentOwner = attacker.name;
 
 			/*Check if a country is defeated or not*/	
@@ -3055,17 +3059,25 @@ $(document).ready(function(){
 
 			for (var b = 0; b < world.territories.length; b++) {
 				territoriesCheckList.push(world.territories[b].currentOwner)
-				//var isDefeated = world.territories.includes(world.countries[i].name);
 			}
-			//TODO: Lägg till så att länder åker ut om de inte har några territories.
-			if (territoriesCheckList.includes(attacker.name) === true) {
+
+			if (territoriesCheckList.includes(originalOwner)) {
+				//debugger
 				console.log("Included")
 			}
 			else {
-				console.log("Not included")
+				console.log(defendingTerritory.currentOwner + " was not included. Defeated.")
+
+				var foundCountry = world.countries.find(function(country) {
+					return country.name === defendingTerritory.currentOwner
+				});
+				if (foundCountry) {
+					foundCountry.defeated = true;
+				}
+			console.log(foundCountry);
 			}
 
-			console.log(window.world)
+			console.log(world.countries)
 
 			updateMap(defendingTerritoryPathName, newColor);
 
@@ -3078,8 +3090,8 @@ $(document).ready(function(){
 		};
 
 		selectAttacker();
-		selectDefendingTerritory();
-		attack();
+		var defendingTerritory = selectDefendingTerritory();
+		attack(defendingTerritory);
 
 		/*Update UI*/
 		$('#latestActivity').text(attackResultText);
