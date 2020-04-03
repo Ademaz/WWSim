@@ -8,21 +8,21 @@ $(document).ready(function(){
 				"short": "AF",
 				"name": "Afghanistan",
 				"defeated": false,
-				"color": "#f44336"
+				"color": "red"
 			},
 			{
 				"id": 2,
 				"short": "AO",
 				"name": "Angola",
 				"defeated": false,
-				"color": "#ef9a9a"
+				"color": "blue"
 			},
 			{
 				"id": 3,
 				"short": "AL",
 				"name": "Albania",
 				"defeated": false,
-				"color": "#e57373"
+				"color": "green"
 			},
 			{
 				"id": 4,
@@ -3013,21 +3013,35 @@ $(document).ready(function(){
 
 
 		function selectAttacker() {
-			attacker = world.countries[Math.floor(Math.random() * world.countries.length)];
+			var undefeated = world.countries.filter(function(country) {
+				return !country.defeated;
+			});
+			var number = Math.floor(Math.random() * undefeated.length);
 
-			if (attacker.defeated == true) {
-				console.log("defeated country selected (" + attacker.name + ")")
-				selectAttacker();
-			}
-			else {
-				console.log("Attacker " + attacker.name + " selected")
-			}
+			//console.log("Undefeated", undefeated);
+			//console.log("Number", number);
+
+			var attacker = undefeated[number];
+			//console.log("Attacker", attacker);
+			console.log("Attacker " + attacker.name + " selected")
+			return attacker;
+			
 		};
 
 		function selectDefendingTerritory() {
+
 			defendingTerritory = world.territories[Math.floor(Math.random() * world.countries.length)];
 
 			if (defendingTerritory.currentOwner === attacker.name) {
+				var undefeated = world.countries.filter(function(country) {
+					return !country.defeated;
+				});
+
+				if (undefeated.length <= 1) {
+					console.log(defendingTerritory.currentOwner + " is the winner")
+					return null;
+				}
+
 				console.log("Own territory chosen")
 				return selectDefendingTerritory();
 			}
@@ -3037,7 +3051,7 @@ $(document).ready(function(){
 			}
 		};
 
-		function attack(defendingTerritory) {
+		function attack(defendingTerritory, attacker) {
 			if (defendingTerritory.currentOwner == defendingTerritory.originalOwner) {
 				attackResultText = attacker.name + " attacks " + defendingTerritory.name;
 			}
@@ -3063,13 +3077,13 @@ $(document).ready(function(){
 
 			if (territoriesCheckList.includes(originalOwner)) {
 				//debugger
-				console.log("Included")
+				console.log("Still owns territory")
 			}
 			else {
-				console.log(defendingTerritory.currentOwner + " was not included. Defeated.")
+				console.log(originalOwner + " owns no territories. Defeated.")
 
 				var foundCountry = world.countries.find(function(country) {
-					return country.name === defendingTerritory.currentOwner
+					return country.name === originalOwner
 				});
 				if (foundCountry) {
 					foundCountry.defeated = true;
@@ -3089,15 +3103,64 @@ $(document).ready(function(){
 			affectedTerritory.style.fill = newColor;
 		};
 
-		selectAttacker();
+		var attacker = selectAttacker();
 		var defendingTerritory = selectDefendingTerritory();
-		attack(defendingTerritory);
+
+		if (defendingTerritory == null) {
+			
+		}
+		else {
+			attack(defendingTerritory, attacker);
+		}
 
 		/*Update UI*/
 		$('#latestActivity').text(attackResultText);
+
+		function calculateCurrentLeader(){
+			var counter = {};
+
+			for (var i = world.territories.length - 1; i >= 0; i--) {
+				if (!counter.hasOwnProperty(world.territories[i].currentOwner)) {
+					counter[world.territories[i].currentOwner] = {owner:world.territories[i].currentOwner, count:1}
+				}
+				else {
+					counter[world.territories[i].currentOwner].count++;
+				}
+			}
+
+			var calculatedCounter = [],
+			keys = Object.keys(counter);
+
+			for (var attr in keys) {
+				var key = counter[keys[attr]]
+				calculatedCounter.push(key)
+			}
+
+			calculatedCounter.sort(function(a, b){
+				if (a.count < b.count) {
+					return 1
+				}
+				if (a.count > b.count) {
+					return -1
+				}
+				return 0
+			});
+
+			return calculatedCounter[0];
+
+			console.log(calculatedCounter[0]);
+		};
+
+		var currentLeader = calculateCurrentLeader();
+
+		$('#currentLeader').text("Leader: " + currentLeader.owner + ". Owned territories: " + currentLeader.count);
 	};
 
 	/*Handles button press for start round*/
+/*	setInterval(function(){
+		roundStart();
+	},10);*/
+
 	$('.nextRound').click(function(){
 		roundStart();
 	});
