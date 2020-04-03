@@ -1,0 +1,19 @@
+body {
+	font-family: 'Roboto', sans-serif;
+	overflow: hidden;
+}
+
+.main {
+	/*height: 800px;*/
+	/*width: 1400px;*/
+	background: #7f8d90;
+}
+
+.infoBox {
+	position: absolute;
+	bottom: 0;
+}
+
+svg {
+	width: 100%;
+}
