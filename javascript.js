@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	/*Variables for start up*/
-	var world = {
+	window.world = {
 		"worldDomination": false,
 		"countries": [
 			{
@@ -3008,7 +3008,9 @@ $(document).ready(function(){
 		attackResultText = "",
 		defendingTerritoryPathName = "",
 		defendingCountry = "",
-		newColor = "";
+		newColor = "",
+		world = window.world;
+
 
 		function selectAttacker() {
 			attacker = world.countries[Math.floor(Math.random() * world.countries.length)];
@@ -3025,7 +3027,7 @@ $(document).ready(function(){
 		function selectDefendingTerritory() {
 			defendingTerritory = world.territories[Math.floor(Math.random() * world.countries.length)];
 
-			if (defendingTerritory.currentOwner == attacker.name) {
+			if (defendingTerritory.currentOwner === attacker.name) {
 				console.log("Own territory chosen")
 				selectDefendingTerritory();
 			}
@@ -3056,8 +3058,14 @@ $(document).ready(function(){
 				//var isDefeated = world.territories.includes(world.countries[i].name);
 			}
 			//TODO: Lägg till så att länder åker ut om de inte har några territories.
+			if (territoriesCheckList.includes(attacker.name) === true) {
+				console.log("Included")
+			}
+			else {
+				console.log("Not included")
+			}
 
-			console.log(territoriesCheckList)
+			console.log(window.world)
 
 			updateMap(defendingTerritoryPathName, newColor);
 
