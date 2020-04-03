@@ -3013,15 +3013,23 @@ $(document).ready(function(){
 
 
 		function selectAttacker() {
-			var undefeated = world.countries.filter(function(country) {
+			var number = Math.floor(Math.random() * world.territories.length);
+
+			var territory = world.territories[number];
+
+			var foundCountry = world.countries.find(function(country) {
+				return country.name === territory.currentOwner
+			});
+
+			/*var undefeated = world.countries.filter(function(country) {
 				return !country.defeated;
 			});
-			var number = Math.floor(Math.random() * undefeated.length);
+			var number = Math.floor(Math.random() * undefeated.length);*/
 
 			//console.log("Undefeated", undefeated);
 			//console.log("Number", number);
 
-			var attacker = undefeated[number];
+			var attacker = foundCountry;
 			//console.log("Attacker", attacker);
 			console.log("Attacker " + attacker.name + " selected")
 			return attacker;
@@ -3039,6 +3047,8 @@ $(document).ready(function(){
 
 				if (undefeated.length <= 1) {
 					console.log(defendingTerritory.currentOwner + " is the winner")
+					world.worldDomination = true;
+					debugger
 					return null;
 				}
 
@@ -3156,12 +3166,19 @@ $(document).ready(function(){
 		$('#currentLeader').text("Leader: " + currentLeader.owner + ". Owned territories: " + currentLeader.count);
 	};
 
-	/*Handles button press for start round*/
-/*	setInterval(function(){
-		roundStart();
-	},10);*/
+	var interval;
 
+	/*Handles button press for start round*/
 	$('.nextRound').click(function(){
-		roundStart();
+		interval = setInterval(function(){
+			if (!world.worldDomination) {
+				roundStart();
+			}
+			else {
+				clearInterval(interval);
+			}
+
+		},10);
+		$('.nextRound').css({"display":"none"});
 	});
 });
