@@ -1392,7 +1392,7 @@ $(document).ready(function(){
 			{
 				"id": 199,
 				"short": "SX",
-				"name": "Saint Martin (Dutch)",
+				"name": "Saint Martin",
 				"defeated": false,
 				"color": "#4e342e"
 			},
@@ -3021,16 +3021,8 @@ $(document).ready(function(){
 				return country.name === territory.currentOwner
 			});
 
-			/*var undefeated = world.countries.filter(function(country) {
-				return !country.defeated;
-			});
-			var number = Math.floor(Math.random() * undefeated.length);*/
-
-			//console.log("Undefeated", undefeated);
-			//console.log("Number", number);
-
 			var attacker = foundCountry;
-			//console.log("Attacker", attacker);
+
 			console.log("Attacker " + attacker.name + " selected")
 			return attacker;
 			
@@ -3047,13 +3039,25 @@ $(document).ready(function(){
 
 				if (undefeated.length <= 1) {
 					console.log(defendingTerritory.currentOwner + " is the winner")
+
 					world.worldDomination = true;
-					debugger
+
+					var winningCountry = world.countries.find(function(country) {
+						return country.name === defendingTerritory.currentOwner
+					});
+					
+					attackResultText = "<p><span style='color:" + attacker.color + ";font-weight:900;'>" + attacker.name + "</span> has achieved world domination!</p>";
+					
+					var latestActivity = $('#latestActivity');
+					latestActivity.html("");
+					latestActivity.append(attackResultText)
+
 					return null;
 				}
-
-				console.log("Own territory chosen")
-				return selectDefendingTerritory();
+				else {
+					console.log("Own territory chosen")
+					return selectDefendingTerritory();
+				}
 			}
 			else {
 				console.log("Defending territory " + defendingTerritory.name + " selected")
@@ -3062,12 +3066,21 @@ $(document).ready(function(){
 		};
 
 		function attack(defendingTerritory, attacker) {
+			
+			var defendingCountry = world.countries.find(function(country) {
+				return country.name === defendingTerritory.currentOwner
+			});
+
 			if (defendingTerritory.currentOwner == defendingTerritory.originalOwner) {
-				attackResultText = attacker.name + " attacks " + defendingTerritory.name;
+				attackResultText = "<p><span style='color:" + attacker.color + ";font-weight:900;'>" + attacker.name + "</span> takes <span style='color:" + defendingCountry.color + ";font-weight:900;'>" + defendingTerritory.name + "</span></p>";
 			}
 			else {
-				attackResultText = attacker.name + " attacks " + defendingTerritory.name + ", currently owned by " + defendingTerritory.currentOwner;
+				attackResultText = "<p><span style='color:" + attacker.color + ";font-weight:900;'>" + attacker.name + "</span> takes <span style='color:" + defendingCountry.color + ";font-weight:900;'>" + defendingTerritory.name + "</span>, previously owned by <span style='color:" + defendingCountry.color + ";font-weight:900;'>" + defendingTerritory.currentOwner + "</span></p>";
 			}
+
+			var leaderCountryList = $('#latestActivity');
+			leaderCountryList.html("");
+			leaderCountryList.append(attackResultText)
 
 			defendingTerritoryPathName = defendingTerritory.name;
 			newColor = attacker.color;
@@ -3086,7 +3099,6 @@ $(document).ready(function(){
 			}
 
 			if (territoriesCheckList.includes(originalOwner)) {
-				//debugger
 				console.log("Still owns territory")
 			}
 			else {
@@ -3098,10 +3110,10 @@ $(document).ready(function(){
 				if (foundCountry) {
 					foundCountry.defeated = true;
 				}
-			console.log(foundCountry);
+			//console.log(foundCountry);
 			}
 
-			console.log(world.countries)
+			//console.log(world.countries)
 
 			updateMap(defendingTerritoryPathName, newColor);
 
@@ -3124,9 +3136,9 @@ $(document).ready(function(){
 		}
 
 		/*Update UI*/
-		$('#latestActivity').text(attackResultText);
+		//$('#latestActivity').text(attackResultText);
 
-		function calculateCurrentLeader(){
+		function calculateCurrentLeaders(){
 			var counter = {};
 
 			for (var i = world.territories.length - 1; i >= 0; i--) {
@@ -3156,14 +3168,19 @@ $(document).ready(function(){
 				return 0
 			});
 
-			return calculatedCounter[0];
-
-			console.log(calculatedCounter[0]);
+			return calculatedCounter.slice(0,10);
 		};
 
-		var currentLeader = calculateCurrentLeader();
+		var currentLeaders = calculateCurrentLeaders();
 
-		$('#currentLeader').text("Leader: " + currentLeader.owner + ". Owned territories: " + currentLeader.count);
+		var leaderCountryList = $('#leaderCountryList');
+
+		leaderCountryList.html("<tr><th>Country</th><th>Territories</th></tr>");
+
+		for (var i = 0; i < currentLeaders.length; i++) {
+			leaderCountryList.append($("<tr><td class='leaderCountry'>" + currentLeaders[i].owner + "</td><td class='territoryCount'>" + currentLeaders[i].count + "</td></tr>"));
+		}
+
 	};
 
 	var interval;
