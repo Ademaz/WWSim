@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
 	/*Variables for start up*/
 	window.world = {
 		"worldDomination": false,
@@ -2994,7 +2994,7 @@ $(document).ready(function(){
 		/*draw territories colors*/
 		for (var i = 0; i < world.countries.length; i++) {
 			var countryPath = document.querySelector('[data-id="' + world.countries[i].short + '"]');
-			
+
 			countryPath.style.fill = world.countries[i].color;
 		}
 	};
@@ -3004,12 +3004,12 @@ $(document).ready(function(){
 	/*Round start*/
 	function roundStart() {
 		var attacker = "",
-		defendingTerritory = "",
-		attackResultText = "",
-		defendingTerritoryPathName = "",
-		defendingCountry = "",
-		newColor = "",
-		world = window.world;
+			defendingTerritory = "",
+			attackResultText = "",
+			defendingTerritoryPathName = "",
+			defendingCountry = "",
+			newColor = "",
+			world = window.world;
 
 
 		function selectAttacker() {
@@ -3017,7 +3017,7 @@ $(document).ready(function(){
 
 			var territory = world.territories[number];
 
-			var foundCountry = world.countries.find(function(country) {
+			var foundCountry = world.countries.find(function (country) {
 				return country.name === territory.currentOwner
 			});
 
@@ -3025,7 +3025,7 @@ $(document).ready(function(){
 
 			console.log("Attacker " + attacker.name + " selected")
 			return attacker;
-			
+
 		};
 
 		function selectDefendingTerritory() {
@@ -3033,7 +3033,7 @@ $(document).ready(function(){
 			defendingTerritory = world.territories[Math.floor(Math.random() * world.countries.length)];
 
 			if (defendingTerritory.currentOwner === attacker.name) {
-				var undefeated = world.countries.filter(function(country) {
+				var undefeated = world.countries.filter(function (country) {
 					return !country.defeated;
 				});
 
@@ -3042,12 +3042,12 @@ $(document).ready(function(){
 
 					world.worldDomination = true;
 
-					var winningCountry = world.countries.find(function(country) {
+					var winningCountry = world.countries.find(function (country) {
 						return country.name === defendingTerritory.currentOwner
 					});
-					
+
 					attackResultText = "<p><span style='color:" + attacker.color + ";font-weight:900;'>" + attacker.name + "</span> has achieved world domination!</p>";
-					
+
 					var latestActivity = $('#latestActivity');
 					latestActivity.html("");
 					latestActivity.append(attackResultText)
@@ -3066,8 +3066,8 @@ $(document).ready(function(){
 		};
 
 		function attack(defendingTerritory, attacker) {
-			
-			var defendingCountry = world.countries.find(function(country) {
+
+			var defendingCountry = world.countries.find(function (country) {
 				return country.name === defendingTerritory.currentOwner
 			});
 
@@ -3091,7 +3091,7 @@ $(document).ready(function(){
 
 			defendingTerritory.currentOwner = attacker.name;
 
-			/*Check if a country is defeated or not*/	
+			/*Check if a country is defeated or not*/
 			var territoriesCheckList = [];
 
 			for (var b = 0; b < world.territories.length; b++) {
@@ -3104,22 +3104,22 @@ $(document).ready(function(){
 			else {
 				console.log(originalOwner + " owns no territories. Defeated.")
 
-				var foundCountry = world.countries.find(function(country) {
+				var foundCountry = world.countries.find(function (country) {
 					return country.name === originalOwner
 				});
 				if (foundCountry) {
 					foundCountry.defeated = true;
 				}
-			//console.log(foundCountry);
+				//console.log(foundCountry);
 			}
 
 			//console.log(world.countries)
 
-			updateMap(defendingTerritoryPathName, newColor);
+			updateTerritoryColor(defendingTerritoryPathName, newColor);
 
 		}
 
-		function updateMap(defendingTerritoryPathName, newColor) {
+		function updateTerritoryColor(defendingTerritoryPathName, newColor) {
 			/*draw territories colors*/
 			var affectedTerritory = document.querySelector('[data-name="' + defendingTerritoryPathName + '"]');
 			affectedTerritory.style.fill = newColor;
@@ -3129,7 +3129,7 @@ $(document).ready(function(){
 		var defendingTerritory = selectDefendingTerritory();
 
 		if (defendingTerritory == null) {
-			
+
 		}
 		else {
 			attack(defendingTerritory, attacker);
@@ -3138,12 +3138,44 @@ $(document).ready(function(){
 		/*Update UI*/
 		//$('#latestActivity').text(attackResultText);
 
-		function calculateCurrentLeaders(){
+		/*Rita pil*/
+		$("#attackArrow").css({ "stroke": "#000000" });
+
+		var attackOrigin = document.querySelector('[data-name="' + attacker.name + '"]');
+		var attackTarget = document.querySelector('[data-name="' + defendingTerritory.name + '"]');
+
+		var attackOriginHeight = attackOrigin.getBoundingClientRect().height;
+		var attackOriginWidth = attackOrigin.getBoundingClientRect().height;
+		var attackTargetHeight = attackTarget.getBoundingClientRect().height;
+		var attackTargetWidth = attackTarget.getBoundingClientRect().height;
+		
+		var mapSVG = document.getElementById('worldMap'),
+			ptOrigin = mapSVG.createSVGPoint(),
+			ptTarget = mapSVG.createSVGPoint();
+
+		ptOrigin.x = $(attackOrigin).offset().left + (attackOriginWidth / 2);
+		ptOrigin.y = $(attackOrigin).offset().top + (attackOriginHeight / 2);
+		ptTarget.x = $(attackTarget).offset().left + (attackTargetWidth / 2);
+		ptTarget.y = $(attackTarget).offset().top + (attackTargetHeight / 2);
+
+		var svgOrigin = ptOrigin.matrixTransform(mapSVG.getScreenCTM().inverse()),
+			svgTarget = ptTarget.matrixTransform(mapSVG.getScreenCTM().inverse());
+
+		$("#attackArrow").attr('x1', svgOrigin.x).attr('y1', svgOrigin.y).attr('x2', svgTarget.x).attr('y2', svgTarget.y);
+
+		/*Ritar om pilen om rutan ändrar storlek*/
+		$(window).resize(function () {
+			drawSVG(($("#attackArrow"), $(attackOrigin), $(attackTarget)))
+			$("#attackArrow").attr('x1', svgOrigin.x).attr('y1', svgOrigin.y).attr('x2', svgTarget.x).attr('y2', svgTarget.y);
+		});
+
+		/*Räknar ut vilka som leder och uppdaterar gränssnitt*/
+		function calculateCurrentLeaders() {
 			var counter = {};
 
 			for (var i = world.territories.length - 1; i >= 0; i--) {
 				if (!counter.hasOwnProperty(world.territories[i].currentOwner)) {
-					counter[world.territories[i].currentOwner] = {owner:world.territories[i].currentOwner, count:1}
+					counter[world.territories[i].currentOwner] = { owner: world.territories[i].currentOwner, count: 1 }
 				}
 				else {
 					counter[world.territories[i].currentOwner].count++;
@@ -3151,14 +3183,14 @@ $(document).ready(function(){
 			}
 
 			var calculatedCounter = [],
-			keys = Object.keys(counter);
+				keys = Object.keys(counter);
 
 			for (var attr in keys) {
 				var key = counter[keys[attr]]
 				calculatedCounter.push(key)
 			}
 
-			calculatedCounter.sort(function(a, b){
+			calculatedCounter.sort(function (a, b) {
 				if (a.count < b.count) {
 					return 1
 				}
@@ -3168,7 +3200,7 @@ $(document).ready(function(){
 				return 0
 			});
 
-			return calculatedCounter.slice(0,10);
+			return calculatedCounter.slice(0, 10);
 		};
 
 		var currentLeaders = calculateCurrentLeaders();
@@ -3186,8 +3218,9 @@ $(document).ready(function(){
 	var interval;
 
 	/*Handles button press for start round*/
-	$('.nextRound').click(function(){
-		interval = setInterval(function(){
+	$('.nextRound').click(function () {
+
+		interval = setInterval(function () {
 			if (!world.worldDomination) {
 				roundStart();
 			}
@@ -3195,7 +3228,8 @@ $(document).ready(function(){
 				clearInterval(interval);
 			}
 
-		},10);
-		$('.nextRound').css({"display":"none"});
+		}, 1000);
+
+		$('.nextRound').css({ "display": "none" });
 	});
 });

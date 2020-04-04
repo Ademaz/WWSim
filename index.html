@@ -22,10 +22,10 @@
 					xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
 					enable_background="new 0 0 2000 1001"
 					pretty_print="False"
-					style="stroke-linejoin: round; stroke:#000;stroke-width: 0; fill: none;"
+					style="stroke-linejoin: round; stroke:#fff;stroke-width: 1; fill: none;"
 					version="1.1"
 					viewBox="0 0 2000 1001"
-					id="svg2"
+					id="worldMap"
 					inkscape:version="0.48.4 r9939"
 					sodipodi:docname="world.svg">
 					
@@ -33,7 +33,15 @@
 						id="defs4">
 						<style
 							type="text/css"
-							id="style6">path { fill-rule: evenodd; }</style>
+							id="style6">path { fill-rule: evenodd; }
+						</style>
+						<marker id="arrow" markerWidth="20" markerHeight="20" refX="0" refY="3" orient="auto" markerUnits="strokeWidth">
+							<path d="M0,0 L0,6 L9,3 z" fill="#000" />
+						</marker>
+
+						<marker id="circle" markerWidth="20" markerHeight="20" refX="2" refY="2">
+							<circle cx="2" cy="2" r="2" stroke="white" fill="#000"/>
+						</marker>
 					</defs>
 					<metadata
 						id="metadata8">
@@ -1543,6 +1551,7 @@
 						data-id="IC"
 						d="m 879.6,395.2 -0.2,-0.2 -0.7,0.5 -0.6,0 0.1,0.2 0.1,0.2 0.7,0.4 0.6,-1.1 z m 13.5,-2.1 0,-0.1 -0.1,0 -0.1,0.1 -1.3,-0.1 -0.2,0.6 -0.5,0.4 0,0.7 0.5,0.7 0.3,0.1 0.5,0.1 0.7,-0.4 0.2,-0.4 0.1,-0.8 -0.1,-0.4 0,-0.5 z m -9.7,0.8 0.5,-0.4 0,-0.2 -0.1,-0.3 -0.5,-0.3 -0.2,0 -0.2,0.2 -0.2,0.4 0.3,0.5 0.2,0.1 0.2,0 z m 4.7,-2.3 1.2,-1 0,-0.3 -1,0.1 -1.1,1 -0.3,0.1 -1,0.1 -0.5,0 -0.4,0.2 0.2,0.3 0.4,1 0.7,0.9 0.6,-0.2 0.3,-0.2 0.4,-0.6 0.5,-1.4 z m 11.6,1.3 1.5,-0.5 0.3,-1 0.3,-1.1 0,-0.7 -0.2,-0.3 -0.1,0 -0.4,0 -0.3,0.2 -0.1,0.6 -0.7,1.3 -0.5,1.2 -0.7,0.6 -0.7,0.2 0.1,0.1 0.7,0.1 0.8,-0.7 z m -19.7,-2 0.5,-0.5 0.1,-0.3 -0.1,-0.5 0.2,-0.2 -0.1,-0.4 -0.3,-0.4 -0.7,0 -0.4,0.6 0.6,1.2 0.1,0.5 0.1,0 z m 22.4,-2.7 0.9,-0.3 0.5,-0.3 0.1,-0.9 0.2,-0.3 -0.2,-0.3 -0.2,0.2 -0.2,0.4 -0.6,0.2 -0.8,0.4 -0.2,0.3 -0.2,0.9 0.4,0.1 0.3,-0.4 z"
 						style="fill:#f2f2f2;fill-rule:evenodd" />
+						<line stroke-width="2px" stroke="#ffffff" stroke-dasharray="10,10" x1="0" y1="0" x2="100" y2="100" id="attackArrow" marker-start="url(#circle)" marker-end="url(#arrow)"/>
 				</svg>
 			</div>
 
